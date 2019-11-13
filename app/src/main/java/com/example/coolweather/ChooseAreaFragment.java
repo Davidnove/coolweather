@@ -3,6 +3,7 @@ package com.example.coolweather;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.fragment.app.Fragment;
 
 import com.example.coolweather.db.City;
 import com.example.coolweather.db.County;
@@ -63,18 +63,25 @@ public class ChooseAreaFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(currentLevel==LEVEL_PROVINCE){
-                    selectedProvince=provinceList.get(position);
+                if (currentLevel == LEVEL_PROVINCE) {
+                    selectedProvince = provinceList.get(position);
                     queryCities();
-                }else if(currentLevel==LEVEL_CITY){
-                    selectedCity=cityList.get(position);
+                } else if (currentLevel == LEVEL_CITY) {
+                    selectedCity = cityList.get(position);
                     queryCounty();
-                }else if(currentLevel==LEVEL_COUNTRY){
-                    String weatherId=countyList.get(position).getWeatherId();
-                    Intent intent=new Intent(getActivity(), WeatherActivity1.class);
-                    intent.putExtra("weather_id",weatherId);
-                    startActivity(intent);
-                    getActivity().finish();
+                } else if (currentLevel == LEVEL_COUNTRY) {
+                    String weatherId = countyList.get(position).getWeatherId();
+                    if (getActivity() instanceof MainActivity) {
+                        Intent intent = new Intent(getActivity(), WeatherActivity1.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    } else if (getActivity()instanceof WeatherActivity1){
+                        WeatherActivity1 activity1=(WeatherActivity1)getActivity();
+                        activity1.drawerLayout.closeDrawers();
+                        activity1.swipeRefreshLayout.setRefreshing(true);
+                        activity1.requestWeather(weatherId);
+                    }
                 }
             }
         });
